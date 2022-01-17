@@ -1,0 +1,7 @@
+static/
+dbs/mysql/data/*
+__pycache__/
+*.pyc
+.git
+.devcontainer
+.vscode

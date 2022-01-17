@@ -1,0 +1,229 @@
+import itertools
+from functools import reduce
+from django.contrib.auth.models import Permission, ContentType
+
+# BUG NOTIFY_AUTH 不存在的时候，无法分配该权限给角色
+# from django.conf import settings
+# NOTIFY_AUTH = getattr(settings, 'NOTIFY_AUTH', '')
+
+PERMS_CONFIG = (
+    {
+        'business_module': '校对领单',
+        'perms': (
+            {
+                'name': '校对工单列表',
+                'codename': 'list_audit_order',
+            },
+            {
+                'name': '校对工单详情',
+                'codename': 'scan_audit_order',
+            },
+            {
+                'name': '校对领单',
+                'codename': 'apply_audit_order',
+            },
+            {
+                'name': '提交校对工单',
+                'codename': 'submit_audit_order',
+            },
+            {
+                'name': '驳回校对工单',
+                'codename': 'returned_audit_order',
+            },
+            {
+                'name': '创建校对工单',
+                'codename': 'create_audit_order',
+            },
+            {
+                'name': '修改校对工单',
+                'codename': 'modify_audit_order',
+            },
+            {
+                'name': '删除校对工单',
+                'codename': 'delete_audit_order',
+            },
+        ),
+    },
+    {
+        'business_module': '质检管理',
+        'perms': (
+            {
+                'name': '查看质检工单',
+                'codename': 'list_qa_order',
+            },
+            {
+                'name': '分配质检工单',
+                'codename': 'assign_qa_order',
+            },
+            {
+                'name': '质检领单',
+                'codename': 'apply_qa_order',
+            },
+            {
+                'name': '提交质检工单',
+                'codename': 'submit_qa_order',
+            },
+            {
+                'name': '质检驳回',
+                'codename': 'returned_qa_order',
+            },
+            {
+                'name': '创建质检工单',
+                'codename': 'create_qa_order',
+            },
+            {
+                'name': '修改质检工单',
+                'codename': 'modify_qa_order',
+            },
+            {
+                'name': '删除质检工单',
+                'codename': 'delete_qa_order',
+            },
+        ),
+    },
+    {
+        'business_module': '内容管理',
+        'perms': (
+            {
+                'name': '查看内容管理列表',
+                'codename': 'list_content_mgmt',
+            },
+            {
+                'name': '查看作者详情',
+                'codename': 'detail_content_author',
+            },
+            {
+                'name': '创建作者',
+                'codename': 'create_content_author',
+            },
+            {
+                'name': '修改作者',
+                'codename': 'modify_content_author',
+            },
+            {
+                'name': '删除作者',
+                'codename': 'delete_content_author',
+            },
+            {
+                'name': '查看书籍详情',
+                'codename': 'detail_content_book',
+            },
+            {
+                'name': '创建书籍',
+                'codename': 'create_content_book',
+            },
+            {
+                'name': '修改书籍',
+                'codename': 'modify_content_book',
+            },
+            {
+                'name': '删除书籍',
+                'codename': 'delete_content_book',
+            },
+            {
+                'name': '查看文章详情',
+                'codename': 'detail_content_article',
+            },
+            {
+                'name': '创建文章',
+                'codename': 'create_content_article',
+            },
+            {
+                'name': '修改文章',
+                'codename': 'modify_content_article',
+            },
+            {
+                'name': '删除文章',
+                'codename': 'delete_content_article',
+            },
+        ),
+    },
+    {
+        'business_module': '绩效管理',
+        'perms': (
+            {
+                'name': '绩效列表',
+                'codename': 'list_user_kpi',
+            },
+        ),
+    },
+    {
+        'business_module': '用户列表',
+        'perms': (
+            {
+                'name': '查看用户列表',
+                'codename': 'check_user_list',
+            },
+            {
+                'name': '分配用户角色',
+                'codename': 'assign_role_action',
+            },
+        )
+    },
+    {
+        'business_module': '角色管理',
+        'perms': (
+            {
+                'name': '查看角色',
+                'codename': 'check_user_group',
+            },
+            {
+                'name': '增加角色',
+                'codename': 'add_user_group',
+            },
+            {
+                'name': '编辑角色',
+                'codename': 'edit_user_group',
+            },
+            {
+                'name': '删除角色',
+                'codename': 'delete_user_group',
+            },
+        )
+    },
+)
+
+# ALL_PERMS 数据格式
+# [
+#    ('perms_code1', 'perms1 description'),
+#    ('perms_code2', 'perms2 description'),
+#    ...
+# ]
+ALL_PERMS = list(itertools.chain.from_iterable([
+    [(perm['codename'], perm['name']) for perm in perm_config['perms']]
+    for perm_config in PERMS_CONFIG
+]))
+
+
+# PERMS_OPTIONS 数据格式
+# {
+#     'check_user_list': {
+#         'business_module': '用户角色管理',
+#         'perms': ({'name': '查看用户角色', 'codename': 'check_user_list'},)
+#     },
+#     'assign_role_action': {
+#         'business_module': '用户角色管理',
+#         'perms': ({'name': '分配用户角色', 'codename': 'assign_role_action'}, )
+#     },
+#     ...
+# }
+PERMS_OPTIONS = reduce(lambda x, y: dict(list(x.items()) + list(y.items())), [
+    {perm['codename']: {'business_module': perm_config['business_module'],
+                        'perms':(perm,)} for perm in perm_config['perms']}
+    for perm_config in PERMS_CONFIG
+])
+
+
+# NOTE 使用自定义权限，需要单独运行以下代码，保证权限存储到数据库
+def insert_perms_to_db():
+    content_type = ContentType.objects.filter(
+        app_label='userprofile', model='userprofile').first()
+    if not content_type:
+        raise ValueError()
+    for codename, name in ALL_PERMS:
+        default = {
+            "name": name,
+            "codename": codename,
+            "content_type": content_type
+        }
+        Permission.objects.update_or_create(defaults=default, codename=codename)
