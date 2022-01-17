@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  dev_service:
+    image: findiff/prod_ubuntu_20_04
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    volumes:
+      - ./:/code
+      - ./static:/data
+    ports:
+      - 8080:8080
+    links:
+      - "dev_mysql:mysql"
+    environment:
+      - ENV=dev
+
+  dev_mysql:
+    image: mysql:8
+    volumes:
+      - ./dbs/mysql/config:/etc/mysql/conf.d
+      - ./dbs/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootroot
+
+  prod_service:
+    image: findiff/prod_ubuntu_20_04
+    working_dir: /code
+    command: ./run.sh
+    restart: always
+    volumes:
+      - /data/deploy_app/findiff:/code
+      - /data/findiff:/data
+    network_mode: bridge
+    ports:
+      - 8080:8080
+    external_links:
+      - "mydb8:mysql"
+    environment:
+      - ENV=prod
