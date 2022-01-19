@@ -1,6 +1,6 @@
 from django.contrib import admin
-from findiff.models.audit import AuditOrder, QAOrder, AuditProfile
+from findiff.models import AuditOrder, Comments, Labels
 
 admin.site.register(AuditOrder)
-admin.site.register(AuditProfile)
-admin.site.register(QAOrder)
+admin.site.register(Comments)
+admin.site.register(Labels)

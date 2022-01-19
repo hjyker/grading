@@ -24,7 +24,7 @@ MYSQL = Config(
     port='3306',
     user='root',
     password='rootroot',
-    db='findiff',
+    db='grading',
 )
 
 STATIC_URL = '/static/'

@@ -130,3 +130,4 @@ beat_celery_django.pid
 
 #
 local_config.py
+init_dataset/

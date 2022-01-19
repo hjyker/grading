@@ -8,9 +8,9 @@ services:
       - ./:/code
       - ./static:/data
     ports:
-      - 8080:8080
-    links:
-      - "dev_mysql:mysql"
+      - 8088:8080
+    external_links:
+      - "findiff_dev_mysql_1:mysql"
     environment:
       - ENV=dev
 
@@ -37,3 +37,8 @@ services:
       - "mydb8:mysql"
     environment:
       - ENV=prod
+
+networks:
+  default:
+    external: true
+    name: findiff_default

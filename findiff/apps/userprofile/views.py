@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
@@ -7,10 +7,9 @@ from rest_framework.views import APIView
 
 from findiff.common.permissions.perm_config import PERMS_CONFIG
 from findiff.common.permissions.perms import PermsRequired
+from findiff.models import UserProfile
 
-from .models import FgUserProfile, UserProfile
-from .serializers import (EmbedGroupSerializer, FgUserProfileSerializer,
-                          FgUserStatusSerializer, RoleSerializer,
+from .serializers import (EmbedGroupSerializer, RoleSerializer,
                           UpsertRoleSerializer, UserProfileSerializer,
                           UserProfileWithRoleSerializer,
                           UserResetPasswordSerializer)
@@ -108,21 +107,3 @@ class RoleViewSet(viewsets.ModelViewSet):
         res.is_valid(raise_exception=True)
         res.save()
         return Response(res.data)
-
-
-class FgUserProfileViewSet(viewsets.ModelViewSet):
-    """前台用户列表"""
-
-    queryset = FgUserProfile.objects.all()
-    serializer_class = FgUserProfileSerializer
-    # 支持昵称,用户名,邮箱查询
-    search_fields = ('nickname', 'user__username', 'user__email')
-
-    @action(methods=['put'], detail=True,
-            serializer_class=FgUserStatusSerializer)
-    def status(self, request, pk):
-        user = self.get_object().user
-        res = self.get_serializer(instance=user, data=request.data)
-        res.is_valid(raise_exception=True)
-        res.save()
-        return Response('success')

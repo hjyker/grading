@@ -19,7 +19,7 @@ class AbsTimeAndOper(models.Model):
         auto_now=True,
     )
     operator = models.ForeignKey(
-        'userprofile.UserProfile',
+        'UserProfile',
         on_delete=models.PROTECT,
         help_text='数据操作人',
         verbose_name='操作人',

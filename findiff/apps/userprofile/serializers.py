@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from findiff.common.custom_validations import NonFieldError
 
-from .models import FgUserProfile, UserProfile
+from findiff.models import UserProfile
 
 
 class PermissionSerializer(serializers.ModelSerializer):
@@ -164,46 +164,3 @@ class UserProfileWithRoleSerializer(serializers.Serializer):
         for user in users:
             user.user.groups.set(roles)
             user.save()
-
-
-class FgUserProfileSerializer(serializers.ModelSerializer):
-    # TODO 权限
-    # TODO 分组
-
-    user_id = serializers.IntegerField(source='user.id', read_only=True)
-    username = serializers.CharField(source='user.username', read_only=True)
-    is_active = serializers.BooleanField(source='user.is_active',
-                                         read_only=True)
-    is_stuff = serializers.BooleanField(source='user.is_stuff', read_only=True)
-    email = serializers.CharField(source='user.email', read_only=True)
-
-    class Meta:
-        model = FgUserProfile
-        fields = (
-            'id',
-            'user_id',
-            'username',
-            'nickname',
-            'phone',
-            'email',
-            'join_time',
-            'operate_time',
-            'operator',
-            'is_active',
-            'is_stuff'
-        )
-
-
-class FgUserStatusSerializer(serializers.Serializer):
-    """更改用户状态"""
-
-    is_active = serializers.BooleanField(label='前台用户状态')
-
-    def validate(self, attrs):
-        return attrs
-
-    def update(self, instance, validated_data):
-        instance.is_active = validated_data.get(
-            'is_active', instance.is_active)
-        instance.save()
-        return instance

@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6c!^pxjg2*wgilc8ezc6^oz&g%ir3y720a2$70&9#e+prdt8yi'
+SECRET_KEY = 'gkwusqp2!97+h+5w$6b6i3mv6o5buc&5#byxa5$k(@pnc=nb(a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.DEBUG
@@ -45,9 +45,6 @@ INSTALLED_APPS = [
     'findiff.apps.userprofile',
     'findiff.apps.userauth',
     'findiff.apps.review',
-    'findiff.apps.article',
-    'findiff.apps.author',
-    'findiff.apps.userkpi',
     *config.INSTALLED_APPS,
 ]
 
@@ -93,6 +90,9 @@ DATABASES = {
         'USER': config.MYSQL.user,
         'PASSWORD': config.MYSQL.password,
         'HOST': config.MYSQL.host,
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        }
     }
 }
 
@@ -101,26 +101,26 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME':
-            'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME':
-            'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
         'NAME':
-            'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
         'NAME':
-            'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -132,13 +132,13 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-STATIC_URL = config.STATIC_URL
+STATIC_URL = '/static/'
 
-STATIC_ROOT = config.STATIC_ROOT
+STATIC_ROOT = '/data/static'
 
-MEDIA_URL = config.MEDIA_URL
+MEDIA_URL = '/media/'
 
-MEDIA_ROOT = config.MEDIA_ROOT
+MEDIA_ROOT = '/data/media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -160,7 +160,7 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format':
-                '[%(asctime)s] %(levelname)s %(pathname)s %(funcName)s %(lineno)d s : %(message)s',
+            '[%(asctime)s] %(levelname)s %(pathname)s %(funcName)s %(lineno)d s : %(message)s',
         },
         'simple': {
             'format': '%(asctime)s %(levelname)s %(message)s',
@@ -198,18 +198,18 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS':
-        'findiff.common.pagination.Pagination',
+    'findiff.common.pagination.Pagination',
     'PAGE_SIZE':
-        10,
+    10,
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
     'DATETIME_FORMAT':
-        '%Y-%m-%d %H:%M:%S',
+    '%Y-%m-%d %H:%M:%S',
     'DATE_FORMAT':
-        '%Y-%m-%d',
+    '%Y-%m-%d',
     'DATETIME_INPUT_FORMATS': (
         '%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
         '%Y-%m-%d %H:%M',  # '2006-10-25 14:30'
@@ -231,9 +231,9 @@ REST_FRAMEWORK = {
         '%m/%d/%y',  # '10/25/06'
     ),
     "TIME_FORMAT":
-        "%H:%M",
+    "%H:%M",
     "TEST_REQUEST_DEFAULT_FORMAT":
-        "json",
+    "json",
 }
 
 # djangorestframework-simplejwt
@@ -241,7 +241,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
     'REFRESH_TOKEN_LIFETIME': timedelta(hours=24),
-    'AUTH_HEADER_TYPES': ('JWT',),
+    'AUTH_HEADER_TYPES': ('JWT', ),
 }
 
 # django-cors-headers

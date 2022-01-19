@@ -1,3 +1,3 @@
-from .content import Author, Book, Article  # noqa: F401
-from .audit import AuditProfile, QAOrder, AuditOrder  # noqa: F401
-from .user_kpi import UserKPI  # noqa: F401
+from .content import *  # noqa: F401
+from .audit import *  # noqa: F401
+from .userprofile import *  # noqa: F401

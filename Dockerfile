@@ -1,6 +1,8 @@
 FROM ubuntu:20.04
 
 ENV LANG C.UTF-8
+ENV PATH="/code:${PATH}"
+ENV PYTHONPATH="/code:${PYTHONPATH}"
 
 RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
   && sed -i '/security.ubuntu.com/d' /etc/apt/sources.list \

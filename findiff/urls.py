@@ -42,9 +42,6 @@ urlpatterns = [
     path('auth/', include('findiff.apps.userauth.urls')),
     path('user/', include('findiff.apps.userprofile.urls')),
     path('order/', include('findiff.apps.review.urls')),
-    path('article/', include('findiff.apps.article.urls')),
-    path('author/', include('findiff.apps.author.urls')),
-    path('kpi/', include('findiff.apps.userkpi.urls'))
 ]
 
 

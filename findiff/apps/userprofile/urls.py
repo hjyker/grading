@@ -1,12 +1,11 @@
-from django.urls import path, re_path, include
+from django.urls import include, path, re_path
 from rest_framework.routers import DefaultRouter
 
-from .views import (FgUserProfileViewSet, OwnPermsView,
-                    RoleViewSet, UserProfileViewSet, UserResetPasswdView)
+from .views import (OwnPermsView, RoleViewSet,
+                    UserProfileViewSet, UserResetPasswdView)
 
 router = DefaultRouter()
 router.register('users', UserProfileViewSet)
-router.register('fg', FgUserProfileViewSet)
 router.register('roles', RoleViewSet)
 
 

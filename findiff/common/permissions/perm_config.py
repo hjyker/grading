@@ -27,10 +27,6 @@ PERMS_CONFIG = (
                 'codename': 'submit_audit_order',
             },
             {
-                'name': '驳回校对工单',
-                'codename': 'returned_audit_order',
-            },
-            {
                 'name': '创建校对工单',
                 'codename': 'create_audit_order',
             },
@@ -45,43 +41,6 @@ PERMS_CONFIG = (
         ),
     },
     {
-        'business_module': '质检管理',
-        'perms': (
-            {
-                'name': '查看质检工单',
-                'codename': 'list_qa_order',
-            },
-            {
-                'name': '分配质检工单',
-                'codename': 'assign_qa_order',
-            },
-            {
-                'name': '质检领单',
-                'codename': 'apply_qa_order',
-            },
-            {
-                'name': '提交质检工单',
-                'codename': 'submit_qa_order',
-            },
-            {
-                'name': '质检驳回',
-                'codename': 'returned_qa_order',
-            },
-            {
-                'name': '创建质检工单',
-                'codename': 'create_qa_order',
-            },
-            {
-                'name': '修改质检工单',
-                'codename': 'modify_qa_order',
-            },
-            {
-                'name': '删除质检工单',
-                'codename': 'delete_qa_order',
-            },
-        ),
-    },
-    {
         'business_module': '内容管理',
         'perms': (
             {
@@ -89,61 +48,8 @@ PERMS_CONFIG = (
                 'codename': 'list_content_mgmt',
             },
             {
-                'name': '查看作者详情',
-                'codename': 'detail_content_author',
-            },
-            {
-                'name': '创建作者',
-                'codename': 'create_content_author',
-            },
-            {
-                'name': '修改作者',
-                'codename': 'modify_content_author',
-            },
-            {
-                'name': '删除作者',
-                'codename': 'delete_content_author',
-            },
-            {
-                'name': '查看书籍详情',
-                'codename': 'detail_content_book',
-            },
-            {
-                'name': '创建书籍',
-                'codename': 'create_content_book',
-            },
-            {
-                'name': '修改书籍',
-                'codename': 'modify_content_book',
-            },
-            {
-                'name': '删除书籍',
-                'codename': 'delete_content_book',
-            },
-            {
-                'name': '查看文章详情',
-                'codename': 'detail_content_article',
-            },
-            {
-                'name': '创建文章',
-                'codename': 'create_content_article',
-            },
-            {
-                'name': '修改文章',
-                'codename': 'modify_content_article',
-            },
-            {
-                'name': '删除文章',
-                'codename': 'delete_content_article',
-            },
-        ),
-    },
-    {
-        'business_module': '绩效管理',
-        'perms': (
-            {
-                'name': '绩效列表',
-                'codename': 'list_user_kpi',
+                'name': '导出标注数据',
+                'codename': 'export_marked_result',
             },
         ),
     },
