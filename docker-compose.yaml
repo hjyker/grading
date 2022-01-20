@@ -23,13 +23,13 @@ services:
       MYSQL_ROOT_PASSWORD: rootroot
 
   prod_service:
-    image: findiff/prod_ubuntu_20_04
+    image: work/prod_ubuntu_20_04
     working_dir: /code
     command: ./run.sh
     restart: always
     volumes:
-      - /data/deploy_app/findiff:/code
-      - /data/findiff:/data
+      - /data/deploy_app/grading:/code
+      - /data/grading:/data
     network_mode: bridge
     ports:
       - 8080:8080
@@ -37,8 +37,3 @@ services:
       - "mydb8:mysql"
     environment:
       - ENV=prod
-
-networks:
-  default:
-    external: true
-    name: findiff_default

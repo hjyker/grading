@@ -8,7 +8,7 @@ MYSQL = Config(
     host='mysql',
     port='3306',
     user='root',
-    password='MS5Qr5dGCdgqj',
+    password='b2&Ydow3PzN',
     db='grading',
 )
 

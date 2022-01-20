@@ -48,8 +48,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
-    create_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    created_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     is_active = serializers.BooleanField(
         source='user.is_active', read_only=True)
     email = serializers.CharField(source='user.email', read_only=True)
@@ -69,8 +69,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'email',
             'date_joined',
             'groups',
-            'create_time',
-            'update_time',
+            'created_time',
+            'updated_time',
             'is_active',
         )
 

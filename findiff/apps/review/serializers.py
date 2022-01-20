@@ -11,79 +11,19 @@ from findiff.models import AuditOrder, Comments, Labels
 from findiff.models.model_constant import AUDIT_STATUS
 
 
-class ApplyAuditOrderSerializer(serializers.Serializer):
-    """校对领单"""
-
-    next_order_id = serializers.IntegerField(
-        read_only=True,
-    )
-
-    def validate(self, attrs):
-        has_orders = AuditOrder.objects.filter(
-            status='unaudit',
-            maker=self.context['request'].user.userprofile,
-        ).count()
-        if has_orders > 0:
-            raise NonFieldError('还有进行中的工单')
-
-        unassign_orders = AuditOrder.objects.filter(status='unassign').count()
-        if unassign_orders == 0:
-            raise NonFieldError('暂无可领工单')
-
-        return attrs
-
-    def save(self):
-        next_order = AuditOrder.objects.filter(status='unassign').first()
-        next_order.status = 'unaudit'
-        next_order.maker = self.context['request'].user.userprofile
-        next_order.save()
-        self.validated_data['next_order_id'] = next_order.id
-
-
-class AuditOrderSerializer(serializers.Serializer):
-    """标注详情"""
-
-    comments = serializers.ListField(read_only=True)
-    labels = serializers.ListField(read_only=True)
-
-    def save(self):
-        comments = Comments.objects.filter(music_no=self.instance.music_no)
-        self.validated_data['comments'] = [
-            {'id': cmt.id, 'comment': cmt.comment, 'likes': cmt.likes} for cmt in comments]
-        labels = Labels.objects.filter(music_no=self.instance.music_no)
-        self.validated_data['labels'] = [
-            {'id': lb.id, 'label': lb.label, 'is_matched': lb.is_matched} for lb in labels]
-
-
-class SubmitAuditOrderSerializer(serializers.Serializer):
-    """提交标注"""
-
-    order = serializers.PrimaryKeyRelatedField(
-        queryset=AuditOrder.objects.all(),
-    )
-    labels = serializers.ListField(write_only=True)
-
-    def validate(self, attrs):
-        return attrs
-
-    def save(self):
-        for label in self.validated_data['labels']:
-            lb = Labels.objects.get(id=label['id'])
-            lb.is_matched = label.is_matched
-            lb.save()
-
-        order = self.validated_data['order']
-        order.status = 'success'
-        order.save()
-
-
 class AuditOrderMgmtSerializer(serializers.Serializer):
-    """工单列表"""
+    """工单管理列表"""
 
+    id = serializers.IntegerField(read_only=True)
     music_no = serializers.IntegerField(read_only=True)
     status = serializers.CharField(read_only=True)
     maker = serializers.IntegerField(
         source='maker.id', read_only=True, allow_null=True)
+    created_time = serializers.DateTimeField(
+        format='%Y-%m-%d %H:%M:%S', read_only=True)
+    updated_time = serializers.DateTimeField(
+        format='%Y-%m-%d %H:%M:%S', read_only=True)
+
     maker_cn = serializers.CharField(
         source='maker.user.username', allow_null=True)
     status_cn = serializers.SerializerMethodField()
@@ -98,6 +38,79 @@ class AuditOrderMgmtSerializer(serializers.Serializer):
 
     def get_label_count(self, obj):
         return Labels.objects.filter(music_no=obj.music_no).count()
+
+
+class ApplyAuditOrderSerializer(serializers.Serializer):
+    """校对领单"""
+
+    next_order_id = serializers.IntegerField(
+        read_only=True,
+    )
+
+    def validate(self, attrs):
+
+        unassign_orders = AuditOrder.objects.filter(status='unassign').count()
+        if unassign_orders == 0:
+            raise NonFieldError('暂无可领工单')
+
+        return attrs
+
+    def save(self):
+        has_orders = AuditOrder.objects.filter(
+            status='unaudit',
+            maker=self.context['request'].user.userprofile,
+        ).first()
+        if has_orders:
+            self.validated_data['next_order_id'] = has_orders.id
+        else:
+            next_order = AuditOrder.objects.filter(status='unassign').first()
+            next_order.status = 'unaudit'
+            next_order.maker = self.context['request'].user.userprofile
+            next_order.save()
+            self.validated_data['next_order_id'] = next_order.id
+
+
+class AuditOrderSerializer(serializers.Serializer):
+    """标注详情"""
+
+    comments = serializers.ListField(read_only=True)
+    labels = serializers.ListField(read_only=True)
+    order_info = AuditOrderMgmtSerializer(read_only=True)
+
+    def save(self):
+        comments = Comments.objects.filter(music_no=self.instance.music_no)
+        self.validated_data['comments'] = [
+            {'id': cmt.id, 'comment': cmt.comment, 'likes': cmt.likes} for cmt in comments]
+        labels = Labels.objects.filter(music_no=self.instance.music_no)
+        self.validated_data['labels'] = [
+            {'id': lb.id, 'label': lb.label, 'is_matched': lb.is_matched} for lb in labels]
+        self.validated_data['order_info'] = AuditOrderMgmtSerializer(self.instance).data
+
+
+class SubmitAuditOrderSerializer(serializers.Serializer):
+    """提交标注"""
+
+    order = serializers.PrimaryKeyRelatedField(
+        queryset=AuditOrder.objects.all(),
+    )
+    labels = serializers.ListField(write_only=True)
+
+    def validate(self, attrs):
+        order = attrs['order']
+        if order.status is not 'unaudit':
+            raise NonFieldError('当前状态不能提单')
+        return attrs
+
+    def save(self):
+        labels = []
+        for label in self.validated_data['labels']:
+            lb = Labels.objects.get(id=label['id'])
+            lb.is_matched = label['is_matched']
+            labels.append(lb)
+        Labels.objects.bulk_update(labels, ['is_matched'])
+        order = self.validated_data['order']
+        order.status = 'success'
+        order.save()
 
 
 class MarkResultExportSerializer(serializers.Serializer):
@@ -127,4 +140,4 @@ class MarkResultExportSerializer(serializers.Serializer):
                         writer.writerow([result.label, result.is_matched])
 
         shutil.make_archive(save_path, 'zip', save_path)
-        self.validated_data['download_url'] = f'{settings.MEDIA_URL}{save_path}.zip'
+        self.validated_data['download_url'] = f'{settings.MEDIA_URL}{dir_name}.zip'

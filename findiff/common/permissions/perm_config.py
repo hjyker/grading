@@ -123,7 +123,7 @@ PERMS_OPTIONS = reduce(lambda x, y: dict(list(x.items()) + list(y.items())), [
 # NOTE 使用自定义权限，需要单独运行以下代码，保证权限存储到数据库
 def insert_perms_to_db():
     content_type = ContentType.objects.filter(
-        app_label='userprofile', model='userprofile').first()
+        app_label='findiff', model='userprofile').first()
     if not content_type:
         raise ValueError()
     for codename, name in ALL_PERMS:
