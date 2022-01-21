@@ -19,8 +19,8 @@ class OwnPermsView(APIView):
     """自定义权限列表"""
 
     permission_classes = [PermsRequired(
-        'userprofile.check_user_group', 'userprofile.add_user_group',
-        'userprofile.edit_user_group', 'userprofile.delete_user_group')]
+        'findiff.check_user_group', 'findiff.add_user_group',
+        'findiff.edit_user_group', 'findiff.delete_user_group')]
 
     def get(self, request, format=None):
         return Response(PERMS_CONFIG)
@@ -31,7 +31,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [PermsRequired('userprofile.check_user_list')]
+    permission_classes = [PermsRequired('findiff.check_user_list')]
     search_fields = ('nickname', 'user__username', 'user__email')
     """更改后台人员在职状态"""
 
@@ -51,7 +51,7 @@ class UserResetPasswdView(CreateAPIView):
 
     queryset = UserProfile.objects.all()
     serializer_class = UserResetPasswordSerializer
-    permission_classes = [PermsRequired('userprofile.check_user_list')]
+    permission_classes = [PermsRequired('findiff.check_user_list')]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -77,10 +77,10 @@ class RoleViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         actions_perms = {
-            'list': ['userprofile.check_user_group'],
-            'create': ['userprofile.add_user_group'],
-            'assign_role': ['userprofile.assign_role'],
-            'destroy': ['userprofile.delete_user_group'],
+            'list': ['findiff.check_user_group'],
+            'create': ['findiff.add_user_group'],
+            'assign_role': ['findiff.assign_role'],
+            'destroy': ['findiff.delete_user_group'],
         }
         perms = actions_perms.get(self.action)
         if perms:

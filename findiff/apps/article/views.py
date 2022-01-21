@@ -12,7 +12,7 @@ class ArticleViewSet(ModelViewSet):
 
     queryset = Article.objects.all().order_by('created_time')
     serializer_class = ArticleSerializer
-    permission_classes = [PermsRequired('userprofile.list_content_mgmt')]
+    permission_classes = [PermsRequired('findiff.list_content_mgmt')]
     filterset_class = ArticleFilter
     search_fields = (
         'author__name', 'article_title', 'book__book_name', 'content_text',
@@ -20,12 +20,12 @@ class ArticleViewSet(ModelViewSet):
 
     def get_permissions(self):
         actions_perms = {
-            'list': ['userprofile.list_content_mgmt'],
-            'create': ['userprofile.create_content_article'],
-            'retrieve': ['userprofile.detail_content_article'],
-            'update': ['userprofile.modify_content_article'],
-            'partial_update': ['userprofile.modify_content_article'],
-            'destroy': ['userprofile.delete_content_article'],
+            'list': ['findiff.list_content_mgmt'],
+            'create': ['findiff.create_content_article'],
+            'retrieve': ['findiff.detail_content_article'],
+            'update': ['findiff.modify_content_article'],
+            'partial_update': ['findiff.modify_content_article'],
+            'destroy': ['findiff.delete_content_article'],
         }
         perms = actions_perms.get(self.action)
         if perms:

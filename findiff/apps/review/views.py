@@ -18,7 +18,7 @@ class ApplyAuditOrderView(CreateAPIView):
 
     queryset = AuditOrder.objects.filter()
     serializer_class = ApplyAuditOrderSerializer
-    permission_classes = [PermsRequired('userprofile.apply_audit_order')]
+    permission_classes = [PermsRequired('findiff.apply_audit_order')]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -32,7 +32,7 @@ class AuditOrderDetailView(RetrieveAPIView):
 
     queryset = AuditOrder.objects.filter()
     serializer_class = AuditOrderSerializer
-    permission_classes = [PermsRequired('userprofile.scan_audit_order')]
+    permission_classes = [PermsRequired('findiff.scan_audit_order')]
 
     def retrieve(self, request, pk=None):
         serializer = self.get_serializer(
@@ -49,7 +49,7 @@ class AuditOrderSubmitView(CreateAPIView):
 
     queryset = AuditOrder.objects.filter()
     serializer_class = SubmitAuditOrderSerializer
-    permission_classes = [PermsRequired('userprofile.submit_audit_order')]
+    permission_classes = [PermsRequired('findiff.submit_audit_order')]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -64,7 +64,7 @@ class AuditOrderResultExportView(ListAPIView):
     queryset = AuditOrder.objects.all()
     serializer_class = AuditOrderMgmtSerializer
     filterset_class = AuditOrderFilter
-    permission_classes = [PermsRequired('userprofile.list_content_mgmt')]
+    permission_classes = [PermsRequired('findiff.list_content_mgmt')]
 
 
 class MarkResultExportView(CreateAPIView):
@@ -74,7 +74,7 @@ class MarkResultExportView(CreateAPIView):
 
     queryset = Labels.objects.filter()
     serializer_class = MarkResultExportSerializer
-    permission_classes = [PermsRequired('userprofile.export_marked_result')]
+    permission_classes = [PermsRequired('findiff.export_marked_result')]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
