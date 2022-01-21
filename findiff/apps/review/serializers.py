@@ -97,7 +97,7 @@ class SubmitAuditOrderSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         order = attrs['order']
-        if order.status is not 'unaudit':
+        if order.status != 'unaudit':
             raise NonFieldError('当前状态不能提单')
         return attrs
 
