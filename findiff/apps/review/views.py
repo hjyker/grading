@@ -1,6 +1,8 @@
-from django.shortcuts import get_object_or_404
+import datetime
+
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import (CreateAPIView, GenericAPIView, ListAPIView,
+                                     RetrieveAPIView, get_object_or_404)
 from rest_framework.response import Response
 
 from findiff.common.permissions.perms import PermsRequired
@@ -8,9 +10,9 @@ from findiff.models.audit import AuditOrder
 from findiff.models.content import Labels
 
 from .filters import AuditOrderFilter
-from .serializers import (ApplyAuditOrderSerializer, AuditOrderSerializer,
-                          SubmitAuditOrderSerializer, AuditOrderMgmtSerializer,
-                          MarkResultExportSerializer)
+from .serializers import (ApplyAuditOrderSerializer, AuditOrderMgmtSerializer,
+                          AuditOrderSerializer, MarkResultExportSerializer,
+                          SubmitAuditOrderSerializer)
 
 
 class ApplyAuditOrderView(CreateAPIView):
@@ -58,13 +60,34 @@ class AuditOrderSubmitView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class AuditOrderResultExportView(ListAPIView):
+class AuditOrderListView(ListAPIView):
     """工单列表"""
 
     queryset = AuditOrder.objects.all()
     serializer_class = AuditOrderMgmtSerializer
     filterset_class = AuditOrderFilter
     permission_classes = [PermsRequired('findiff.list_content_mgmt')]
+
+
+class AuditOrderDataView(GenericAPIView):
+    """审核统计"""
+
+    queryset = AuditOrder.objects.all()
+    permission_classes = [PermsRequired('findiff.scan_audit_order')]
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        total_audit = queryset.filter(
+            maker=request.user.userprofile,
+            status='success',
+        )
+
+        now = datetime.datetime.now()
+        today_audit = total_audit.filter(
+            updated_time__range=(now.strftime(
+                '%Y-%m-%d 00:00:00'), now.strftime('%Y-%m-%d 23:59:59')),
+        )
+        return Response({'total': total_audit.count(), 'today': today_audit.count()})
 
 
 class MarkResultExportView(CreateAPIView):

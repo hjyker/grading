@@ -16,7 +16,11 @@ class AuditOrderFilter(django_filters.rest_framework.FilterSet):
         field_name='status',
         lookup_expr='in',
     )
+    maker__in = ChartInFilter(
+        field_name='maker',
+        lookup_expr='in',
+    )
 
     class Meta:
         model = AuditOrder
-        fields = ['operator']
+        fields = []

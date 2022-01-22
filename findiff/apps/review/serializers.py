@@ -49,23 +49,27 @@ class ApplyAuditOrderSerializer(serializers.Serializer):
 
     def validate(self, attrs):
 
-        unassign_orders = AuditOrder.objects.filter(status='unassign').count()
+        unassign_orders = AuditOrder.objects.filter(
+            status__in=('unassign', 'unaudit')).count()
         if unassign_orders == 0:
             raise NonFieldError('暂无可领工单')
 
         return attrs
 
     def save(self):
+        user = self.context['request'].user.userprofile
         has_orders = AuditOrder.objects.filter(
             status='unaudit',
-            maker=self.context['request'].user.userprofile,
+            maker=user,
         ).first()
         if has_orders:
             self.validated_data['next_order_id'] = has_orders.id
         else:
             next_order = AuditOrder.objects.filter(status='unassign').first()
             next_order.status = 'unaudit'
-            next_order.maker = self.context['request'].user.userprofile
+            next_order.maker = user
+            next_order.operator = user
+            next_order.updated_time = datetime.datetime.now()
             next_order.save()
             self.validated_data['next_order_id'] = next_order.id
 
@@ -84,7 +88,8 @@ class AuditOrderSerializer(serializers.Serializer):
         labels = Labels.objects.filter(music_no=self.instance.music_no)
         self.validated_data['labels'] = [
             {'id': lb.id, 'label': lb.label, 'is_matched': lb.is_matched} for lb in labels]
-        self.validated_data['order_info'] = AuditOrderMgmtSerializer(self.instance).data
+        self.validated_data['order_info'] = AuditOrderMgmtSerializer(
+            self.instance).data
 
 
 class SubmitAuditOrderSerializer(serializers.Serializer):
@@ -102,14 +107,20 @@ class SubmitAuditOrderSerializer(serializers.Serializer):
         return attrs
 
     def save(self):
+        user = self.context['request'].user.userprofile
+        now = datetime.datetime.now()
         labels = []
         for label in self.validated_data['labels']:
             lb = Labels.objects.get(id=label['id'])
             lb.is_matched = label['is_matched']
+            lb.operator = user
+            lb.updated_time = now
             labels.append(lb)
         Labels.objects.bulk_update(labels, ['is_matched'])
         order = self.validated_data['order']
         order.status = 'success'
+        order.operator = user
+        order.updated_time = now
         order.save()
 
 

@@ -1,7 +1,7 @@
 # 审核状态
 AUDIT_STATUS = (
     ('unassign', '未分配'),
-    ('unaudit', '待校对'),
+    ('unaudit', '待标注'),
     ('success', '成功'),
     ('fail', '失败'),
 )
