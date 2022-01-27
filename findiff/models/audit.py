@@ -29,6 +29,10 @@ class AuditOrder(AbsTimeAndOper):
         blank=True,
         default=None,
     )
+    is_hidden = models.BooleanField(
+        '是否隐藏该工单',
+        default=False,
+    )
 
     def __str__(self):
         return f'id:{self.id}-{self.music_no}-{self.status}'

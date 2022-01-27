@@ -50,7 +50,9 @@ class ApplyAuditOrderSerializer(serializers.Serializer):
     def validate(self, attrs):
 
         unassign_orders = AuditOrder.objects.filter(
-            status__in=('unassign', 'unaudit')).count()
+            status__in=('unassign', 'unaudit'),
+            is_hidden=False,
+        ).count()
         if unassign_orders == 0:
             raise NonFieldError('暂无可领工单')
 
@@ -61,11 +63,15 @@ class ApplyAuditOrderSerializer(serializers.Serializer):
         has_orders = AuditOrder.objects.filter(
             status='unaudit',
             maker=user,
+            is_hidden=False,
         ).first()
         if has_orders:
             self.validated_data['next_order_id'] = has_orders.id
         else:
-            next_order = AuditOrder.objects.filter(status='unassign').first()
+            next_order = AuditOrder.objects.filter(
+                status='unassign',
+                is_hidden=False,
+            ).first()
             next_order.status = 'unaudit'
             next_order.maker = user
             next_order.operator = user
@@ -127,14 +133,51 @@ class SubmitAuditOrderSerializer(serializers.Serializer):
 class MarkResultExportSerializer(serializers.Serializer):
     """导出标记数据"""
 
-    # updated_time = serializers.DateTimeField(
-    #     format='%Y-%m-%d %H:%M:%S', write_only=True)
+    created_time__range = serializers.ListField(
+        child=serializers.DateTimeField(),
+        required=False,
+        min_length=2,
+        max_length=2,
+        allow_null=True,
+        write_only=True,
+    )
+    updated_time__range = serializers.ListField(
+        child=serializers.DateTimeField(),
+        required=False,
+        min_length=2,
+        max_length=2,
+        allow_null=True,
+        write_only=True,
+    )
+    status__in = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        max_length=10,
+        allow_empty=True,
+        allow_null=True,
+        write_only=True,
+    )
+    maker__in = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        max_length=50,
+        allow_null=True,
+        allow_empty=True,
+        write_only=True,
+    )
     download_url = serializers.CharField(read_only=True)
 
     def save(self):
         titles = ['候选词', '是否为这首歌的标签']
         finished_orders = [
-            od.music_no for od in AuditOrder.objects.filter(status='success')]
+            od.music_no for od in AuditOrder.objects.filter(
+                **{k: v for k, v in self.validated_data.items() if v},
+                is_hidden=False,
+            )
+        ]
+        if not len(finished_orders):
+            raise NonFieldError('暂无数据可以导出')
+
         dir_name = datetime.datetime.now().strftime('%Y%d%m%H%M%S')
         save_path = Path(f'{settings.MEDIA_ROOT}') / dir_name
         if not save_path.exists():

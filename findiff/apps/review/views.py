@@ -32,7 +32,7 @@ class ApplyAuditOrderView(CreateAPIView):
 class AuditOrderDetailView(RetrieveAPIView):
     """标注详情"""
 
-    queryset = AuditOrder.objects.filter()
+    queryset = AuditOrder.objects.filter(is_hidden=False)
     serializer_class = AuditOrderSerializer
     permission_classes = [PermsRequired('findiff.scan_audit_order')]
 
@@ -63,7 +63,7 @@ class AuditOrderSubmitView(CreateAPIView):
 class AuditOrderListView(ListAPIView):
     """工单列表"""
 
-    queryset = AuditOrder.objects.all()
+    queryset = AuditOrder.objects.filter(is_hidden=False)
     serializer_class = AuditOrderMgmtSerializer
     filterset_class = AuditOrderFilter
     permission_classes = [PermsRequired('findiff.list_content_mgmt')]
@@ -72,7 +72,7 @@ class AuditOrderListView(ListAPIView):
 class AuditOrderDataView(GenericAPIView):
     """审核统计"""
 
-    queryset = AuditOrder.objects.all()
+    queryset = AuditOrder.objects.filter(is_hidden=False)
     permission_classes = [PermsRequired('findiff.scan_audit_order')]
 
     def get(self, request):
